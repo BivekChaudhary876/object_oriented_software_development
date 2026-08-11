@@ -71,7 +71,7 @@ public class Main extends Application {
     }
 
     //  MAIN MENU
-    private void showMainMenu(Stage stage) {
+    public void showMainMenu(Stage stage) {
 
         VBox menuLayout = new VBox(20);
         menuLayout.setAlignment(Pos.CENTER);

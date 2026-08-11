@@ -9,6 +9,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.animation.AnimationTimer;
+import javafx.scene.control.Button;
+
 
 public class Tetris {
 
@@ -39,6 +41,9 @@ public class Tetris {
     private boolean isGameOver = false;
     private AnimationTimer timer;
 
+    //countdown
+    private boolean isStartingDelay = true;
+
     public Scene createTetrisScene(Stage stage) {
 
         //root
@@ -55,18 +60,61 @@ public class Tetris {
         //score
         scoreLabel = new Label("Score: 0");
         scoreLabel.setTextFill(Color.WHITE);
+        scoreLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
 
-        //pause
-        Label pauseLabel = new Label("[ PAUSE ]");
-        pauseLabel.setTextFill(Color.WHITE);
+        // SCORE BOX (square)
+        VBox scoreBox = new VBox(scoreLabel);
+        scoreBox.setAlignment(Pos.CENTER);
+        scoreBox.setPrefSize(150, 150);
+        scoreBox.setStyle("-fx-background-color: #444; -fx-border-color: white;");
+
+        //Sidebar buttons
+        //back button
+        Button backButton = new Button("Main Menu");
+        backButton.setPrefWidth(150);
+        backButton.setStyle(
+                "-fx-background-color: #555; -fx-text-fill: white; -fx-font-size: 14px;"
+        );
+        backButton.setFocusTraversable(false);
+
+        //replayButton
+        Button replayButton = new Button("Replay");
+        replayButton.setPrefWidth(150);
+        replayButton.setStyle(
+                "-fx-background-color: #555; -fx-text-fill: white; -fx-font-size: 14px;"
+        );
+        replayButton.setFocusTraversable(false);
+        backButton.setOnAction(e -> {
+            isGameOver = false;
+            fallAccumulator = 0;
+            if (timer != null) timer.stop();
+            gameRoot.getChildren().clear();
+
+            Main main = new Main();
+            main.showMainMenu(stage);
+        });
+
+        // Button container
+        VBox buttonBox = new VBox(10, backButton);
+        buttonBox.setAlignment(Pos.CENTER);
+
 
         //next piece
+        Label nextLabel = new Label("Next Piece");
+        nextLabel.setTextFill(Color.WHITE);
+        nextLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+        nextLabel.setTranslateX(5); // upper-left position
+
         nextPiecePane = new Pane();
-        nextPiecePane.setPrefSize(150, 150);
+        nextPiecePane.setPrefSize(150, 120);
         nextPiecePane.setStyle("-fx-background-color: #444; -fx-border-color: white;");
 
+        VBox nextBox = new VBox(5, nextLabel, nextPiecePane);
+        nextBox.setAlignment(Pos.TOP_LEFT);
+        nextBox.setPrefSize(150, 165);
+
         //side bar
-        sideBar.getChildren().addAll(scoreLabel, pauseLabel, nextPiecePane);
+        sideBar.getChildren().addAll(scoreBox, buttonBox, nextBox);
 
         Pane root = new Pane();
         root.setPrefSize(COLS * TILE + 200, ROWS * TILE);
@@ -81,9 +129,9 @@ public class Tetris {
         nextType = getRandomType();
         spawnPiece();
 
+
         scene.setOnKeyPressed(e -> {
             if (isGameOver) return;
-
             switch (e.getCode()) {
                 case LEFT -> move(-1);
                 case RIGHT -> move(1);
@@ -93,7 +141,7 @@ public class Tetris {
         });
 
         //movement animation
-        AnimationTimer timer = new AnimationTimer() {
+        timer = new AnimationTimer() {
             long last = 0;
 
             @Override
@@ -208,9 +256,52 @@ public class Tetris {
 
         // Center on the Tetris board
         over.setTranslateX((COLS * TILE) / 2 - 80);
-        over.setTranslateY((ROWS * TILE) / 2 - 20);
+        over.setTranslateY((ROWS * TILE) / 2 - 60);
 
-        gameRoot.getChildren().add(over);
+        //replay
+        Button replayButton = new Button("Replay");
+        replayButton.setPrefWidth(150);
+        replayButton.setStyle("-fx-background-color: #555; -fx-text-fill: white; -fx-font-size: 14px;");
+        replayButton.setTranslateX((COLS * TILE) / 2 - 75);
+        replayButton.setTranslateY((ROWS * TILE) / 2 - 0);
+
+        replayButton.setOnAction(e -> restartGame());
+
+        gameRoot.getChildren().addAll(over, replayButton);
+    }
+
+    //restart game logic
+    private void restartGame() {
+        // Remove active falling piece
+        for (Rectangle r : piece) {
+            if (r != null) {
+                gameRoot.getChildren().remove(r);
+            }
+        }
+        // Clear grid
+        for (int y = 0; y < ROWS; y++) {
+            for (int x = 0; x < COLS; x++) {
+                if (grid[y][x] != null) {
+                    gameRoot.getChildren().remove(grid[y][x]);
+                    grid[y][x] = null;
+                }
+            }
+        }
+
+        // Remove GAME OVER + replay button
+        gameRoot.getChildren().removeIf(node ->
+                node instanceof Label || node instanceof Button
+        );
+
+        score = 0;
+        scoreLabel.setText("Score: 0");
+
+        isGameOver = false;
+
+        nextType = getRandomType();
+        spawnPiece();
+
+        timer.start();
     }
 
     // Collision
@@ -256,6 +347,7 @@ public class Tetris {
         }
     }
 
+    //rotate piece
     private void rotate() {
         if (currentType == TetrominoType.O) return;
 
@@ -265,6 +357,9 @@ public class Tetris {
         int[] newGX = new int[4];
         int[] newGY = new int[4];
 
+        boolean fail = false;
+
+        // Try normal rotation
         for (int i = 0; i < 4; i++) {
             int rx = gx[i] - px;
             int ry = gy[i] - py;
@@ -272,18 +367,55 @@ public class Tetris {
             int nx = px - ry;
             int ny = py + rx;
 
-            if (nx < 0 || nx >= COLS) return;
-            if (ny < 0 || ny >= ROWS) return;
-            if (grid[ny][nx] != null) return;
-
             newGX[i] = nx;
             newGY[i] = ny;
+
+            if (nx < 0 || nx >= COLS || ny < 0 || ny >= ROWS || grid[ny][nx] != null) {
+                fail = true;
+            }
         }
 
-        gx = newGX;
-        gy = newGY;
-        renderPiece();
+        // If normal rotation works
+        if (!fail) {
+            gx = newGX;
+            gy = newGY;
+            renderPiece();
+            return;
+        }
+
+        // Try wall kick 1 tile right
+        if (canKick(newGX, newGY, 1)) {
+            for (int i = 0; i < 4; i++) newGX[i] += 1;
+            gx = newGX;
+            gy = newGY;
+            renderPiece();
+            return;
+        }
+
+        // Try wall kick 1 tile left
+        if (canKick(newGX, newGY, -1)) {
+            for (int i = 0; i < 4; i++) newGX[i] -= 1;
+            gx = newGX;
+            gy = newGY;
+            renderPiece();
+            return;
+        }
+
     }
+
+    // wall back 1 tile
+    private boolean canKick(int[] newGX, int[] newGY, int dx) {
+        for (int i = 0; i < 4; i++) {
+            int nx = newGX[i] + dx;
+            int ny = newGY[i];
+
+            if (nx < 0 || nx >= COLS) return false;
+            if (grid[ny][nx] != null) return false;
+        }
+        return true;
+    }
+
+    //end rotate piece
 
     // Lock Piece
     private void lockPiece() {
