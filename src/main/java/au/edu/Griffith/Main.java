@@ -1,8 +1,13 @@
 package au.edu.Griffith;
 
+import javafx.animation.FadeTransition;
+import javafx.animation.PauseTransition;
+import javafx.animation.SequentialTransition;
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -13,10 +18,17 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.util.Duration;
 
 import java.net.URL;
 
 public class Main extends Application {
+
+    // How long the loading image stays on screen before the menu appears
+    private static final Duration SPLASH_HOLD = Duration.seconds(2.5);
+
+    // Lives in src/main/resources/ - leading slash means "root of the classpath"
+    private static final String SPLASH_IMAGE_NAME = "/splash-image.png";
 
     @Override
     public void start(Stage initialStage) {
@@ -24,14 +36,86 @@ public class Main extends Application {
         showSplashScreen(initialStage, () -> showMainMenu(initialStage));
     }
 
-    //  SPLASH SCREEN
+    //  SPLASH SCREEN — image if present, otherwise fall back to the video
     private void showSplashScreen(Stage mainStage, Runnable onFinished) {
+
+        URL imageUrl = getClass().getResource(SPLASH_IMAGE_NAME);
+        if (imageUrl != null) {
+            showImageSplash(imageUrl, onFinished);
+        } else {
+            showVideoSplash(mainStage, onFinished);
+        }
+    }
+
+    //  IMAGE SPLASH
+    private void showImageSplash(URL imageUrl, Runnable onFinished) {
+
+        Stage splashStage = new Stage(StageStyle.UNDECORATED);
+
+        Image image = new Image(imageUrl.toExternalForm());
+        ImageView imageView = new ImageView(image);
+        imageView.setPreserveRatio(true);
+        imageView.setFitWidth(800);
+
+        Label loadingLabel = new Label("Loading...");
+        loadingLabel.setStyle("-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;");
+        StackPane.setAlignment(loadingLabel, Pos.BOTTOM_CENTER);
+
+        StackPane splashLayout = new StackPane(imageView, loadingLabel);
+        splashLayout.setStyle("-fx-background-color: black;");
+
+        Scene splashScene = new Scene(splashLayout);
+
+        // Make sure the splash only ever hands over to the menu once
+        Runnable finishOnce = new Runnable() {
+            private boolean done = false;
+
+            @Override
+            public void run() {
+                if (done) {
+                    return;
+                }
+                done = true;
+                splashStage.close();
+                onFinished.run();
+            }
+        };
+
+        // Click or ESC to skip
+        splashScene.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ESCAPE) {
+                finishOnce.run();
+            }
+        });
+        splashLayout.setOnMouseClicked(event -> finishOnce.run());
+
+        splashStage.setScene(splashScene);
+        splashStage.centerOnScreen();
+        splashStage.show();
+
+        FadeTransition fadeIn = new FadeTransition(Duration.millis(400), splashLayout);
+        fadeIn.setFromValue(0);
+        fadeIn.setToValue(1);
+
+        PauseTransition hold = new PauseTransition(SPLASH_HOLD);
+
+        FadeTransition fadeOut = new FadeTransition(Duration.millis(400), splashLayout);
+        fadeOut.setFromValue(1);
+        fadeOut.setToValue(0);
+
+        SequentialTransition splashSequence = new SequentialTransition(fadeIn, hold, fadeOut);
+        splashSequence.setOnFinished(event -> finishOnce.run());
+        splashSequence.play();
+    }
+
+    //  VIDEO SPLASH
+    private void showVideoSplash(Stage mainStage, Runnable onFinished) {
 
         Stage splashStage = new Stage(StageStyle.UNDECORATED);
 
         URL mediaUrl = getClass().getResource("assets/splash_vid.mp4");
         if (mediaUrl == null) {
-            System.err.println("Splash screen not found!");
+            System.err.println("No splash image or video found - skipping splash screen.");
             onFinished.run();
             return;
         }
