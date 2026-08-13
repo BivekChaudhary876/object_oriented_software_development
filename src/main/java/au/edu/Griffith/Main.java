@@ -171,7 +171,11 @@ public class Main extends Application {
             stage.setScene(tetrisScene);
         });
 
-        highScoresButton.setOnAction(event -> System.out.println("High Scores"));
+        highScoresButton.setOnAction(event -> {
+            HighScores highScores = new HighScores();
+            Scene highScoresScene = highScores.createHighScoresScene(stage);
+            stage.setScene(highScoresScene);
+        });
         configButton.setOnAction(event -> System.out.println("Config"));
         exitButton.setOnAction(event -> javafx.application.Platform.exit());
 
