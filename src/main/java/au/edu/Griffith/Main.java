@@ -176,7 +176,11 @@ public class Main extends Application {
             Scene highScoresScene = highScores.createHighScoresScene(stage);
             stage.setScene(highScoresScene);
         });
-        configButton.setOnAction(event -> System.out.println("Config"));
+        configButton.setOnAction(event -> {
+            Configuration configuration = new Configuration();
+            Scene configurationScene = configuration.createConfigurationScene(stage);
+            stage.setScene(configurationScene);
+        });
         exitButton.setOnAction(event -> javafx.application.Platform.exit());
 
         menuLayout.getChildren().addAll(
