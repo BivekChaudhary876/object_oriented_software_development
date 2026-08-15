@@ -3,6 +3,7 @@ package au.edu.Griffith;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -39,7 +40,10 @@ public class Tetris {
     private int score = 0;
 
     private boolean isGameOver = false;
+    private boolean isPaused = false; //Tracks whether the game is currently paused
     private AnimationTimer timer;
+
+    private Label pauseLabel; //Displays the PAUSED message on the game board
 
     //countdown
     private boolean isStartingDelay = true;
@@ -50,6 +54,24 @@ public class Tetris {
         gameRoot = new Pane();
         gameRoot.setPrefSize(COLS * TILE, ROWS * TILE);
         gameRoot.setStyle("-fx-background-color: black;");
+
+        //Pause Function to display "PAUSED" label when the game is paused
+        pauseLabel = new Label("PAUSED");
+        pauseLabel.setTextFill(Color.WHITE);
+        pauseLabel.setStyle(
+                "-fx-font-size: 32px; " +
+                "-fx-font-weight: bold;" +
+                "-fx-background-color: rgba(0, 0, 0, 0.75);" +
+                "-fx-padding: 20px;"
+        );
+
+        pauseLabel.setPrefWidth(COLS * TILE);
+        pauseLabel.setAlignment(Pos.CENTER);
+        pauseLabel.setLayoutY((ROWS * TILE) / 2.0 - 45);
+        pauseLabel.setVisible(false);
+
+        gameRoot.getChildren().add(pauseLabel);
+        pauseLabel.toFront();
 
         //vbox
         VBox sideBar = new VBox(20);
@@ -132,6 +154,14 @@ public class Tetris {
 
         scene.setOnKeyPressed(e -> {
             if (isGameOver) return;
+
+            if (e.getCode() == KeyCode.P) {
+                togglePause();
+                return;
+            }
+
+            if (isPaused) return; // P key toggles between pause and resume by disabling other controls
+
             switch (e.getCode()) {
                 case LEFT -> move(-1);
                 case RIGHT -> move(1);
@@ -148,6 +178,11 @@ public class Tetris {
             public void handle(long now) {
                 if (isGameOver) return; // stop updating when game over
 
+                //Prevents movement from continuing when the game is paused, and ensures that the last timestamp is updated to the current time when resuming.
+                if (isPaused) {
+                    last = now;
+                    return;
+                }
                 if (last == 0) { last = now; return; }
 
                 double deltaMs = (now - last) / 1_000_000.0;
@@ -194,6 +229,7 @@ public class Tetris {
             r.setStroke(Color.GRAY);
             piece[i] = r;
             gameRoot.getChildren().add(r);
+            pauseLabel.toFront();   // Keep PAUSED overlay above the newly spawned tetromino
         }
 
         renderPiece();
@@ -242,6 +278,28 @@ public class Tetris {
     }
 
 
+    //Toggles the game state and PAUSED label visibility when the "P" key is pressed.
+    private void togglePause() {
+
+        if (isGameOver) {
+            return;
+        }
+
+        isPaused = !isPaused;
+
+        if (isPaused) {
+            //Make sure the pause label exists on the game board
+            if (!gameRoot.getChildren().contains(pauseLabel)) {
+                gameRoot.getChildren().add(pauseLabel);
+            }
+
+            pauseLabel.setVisible(true);
+            pauseLabel.toFront();
+        } else {
+            pauseLabel.setVisible(false);
+        }
+    }
+
     //gameover
     private void gameOver() {
         isGameOver = true;
@@ -272,6 +330,11 @@ public class Tetris {
 
     //restart game logic
     private void restartGame() {
+
+        // Reset pause state when Replay starts a new game
+        isPaused = false;
+        pauseLabel.setVisible(false);
+
         // Remove active falling piece
         for (Rectangle r : piece) {
             if (r != null) {
@@ -290,7 +353,8 @@ public class Tetris {
 
         // Remove GAME OVER + replay button
         gameRoot.getChildren().removeIf(node ->
-                node instanceof Label || node instanceof Button
+                (node instanceof Label && node != pauseLabel)
+                        || node instanceof Button
         );
 
         score = 0;
@@ -300,6 +364,15 @@ public class Tetris {
 
         nextType = getRandomType();
         spawnPiece();
+
+        // Make sure the PAUSED label still exists board after replay
+        if (!gameRoot.getChildren().contains(pauseLabel)) {
+            gameRoot.getChildren().add(pauseLabel);
+        }
+
+        // Keep PAUSED message above all tetrominoes
+        pauseLabel.toFront();
+        pauseLabel.setVisible(false);
 
         timer.start();
     }
