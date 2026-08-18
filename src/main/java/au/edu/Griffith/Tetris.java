@@ -229,29 +229,32 @@ public class Tetris implements Movable {
     }
 
     // spawn piece
-    //needs to be abstract piece
     private void spawnPiece() {
         currentType = nextType;
         nextType = getRandomType();
         drawNextPiecePreview();
 
-        int[][] coords = switch (currentType) {
-            case I -> new int[][] {{3,0},{4,0},{5,0},{6,0}};
-            case O -> new int[][] {{4,0},{5,0},{4,1},{5,1}};
-            case T -> new int[][] {{3,0},{4,0},{5,0},{4,1}};
-            case L -> new int[][] {{3,0},{4,0},{5,0},{5,1}};
-            case J -> new int[][] {{3,0},{4,0},{5,0},{3,1}};
-            case S -> new int[][] {{4,0},{5,0},{3,1},{4,1}};
-            case Z -> new int[][] {{3,0},{4,0},{4,1},{5,1}};
+        // Create tetromino subclass
+        AbstractTetromino tetromino = switch (currentType) {
+            case I -> new TetrominoI();
+            case O -> new TetrominoO();
+            case T -> new TetrominoT();
+            case L -> new TetrominoL();
+            case J -> new TetrominoJ();
+            case S -> new TetrominoS();
+            case Z -> new TetrominoZ();
         };
 
-        Color c = Color.color(Math.random(), Math.random(), Math.random());
+        // Get shape + color from abstract class
+        int[][] coords = tetromino.getCoords();
+        Color c = tetromino.getColor();
 
+        // Apply tetromino blocks to your gx/gy arrays
         for (int i = 0; i < 4; i++) {
             gx[i] = coords[i][0];
             gy[i] = coords[i][1];
 
-            // GAME OVER CHECK spawn position already occupied
+            // GAME OVER CHECK
             if (grid[gy[i]][gx[i]] != null) {
                 gameOver();
                 return;
@@ -261,11 +264,12 @@ public class Tetris implements Movable {
             r.setStroke(Color.GRAY);
             piece[i] = r;
             gameRoot.getChildren().add(r);
-            pauseLabel.toFront();   // Keep PAUSED overlay above the newly spawned tetromino
+            pauseLabel.toFront();
         }
 
         renderPiece();
     }
+
 
     // piece gravity
     private void update(double deltaMs) {
@@ -514,7 +518,12 @@ public class Tetris implements Movable {
             int nx = newGX[i] + dx;
             int ny = newGY[i];
 
+            //Prevent negative row
+            if (ny < 0 || ny >= ROWS) return false;
+
+            //Prevent negative column
             if (nx < 0 || nx >= COLS) return false;
+
             if (grid[ny][nx] != null) return false;
         }
         return true;
