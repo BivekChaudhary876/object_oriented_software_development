@@ -15,7 +15,7 @@ import javafx.animation.AnimationTimer;
 import javafx.scene.control.Button;
 
 
-public class Tetris {
+public class Tetris implements Movable {
 
     private static final int COLS = 10;
     private static final int ROWS = 20;
@@ -194,10 +194,10 @@ public class Tetris {
             if (isPaused) return; // P key toggles between pause and resume by disabling other controls
 
             switch (e.getCode()) {
-                case LEFT -> move(-1);
-                case RIGHT -> move(1);
-                case UP -> rotate();
-                case DOWN -> softDrop();
+                case LEFT -> moveLeft();
+                case RIGHT -> moveRight();
+                case UP -> rotatePiece();
+                case DOWN -> softDropPiece();
             }
         });
 
@@ -619,4 +619,26 @@ public class Tetris {
         TetrominoType[] v = TetrominoType.values();
         return v[(int)(Math.random() * v.length)];
     }
+
+    //movement interface
+    @Override
+    public void moveLeft() {
+        move(-1);
+    }
+
+    @Override
+    public void moveRight() {
+        move(1);
+    }
+
+    @Override
+    public void softDropPiece() {
+        softDrop();
+    }
+
+    @Override
+    public void rotatePiece() {
+        rotate();
+    }
+
 }
