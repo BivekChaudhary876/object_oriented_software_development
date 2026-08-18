@@ -15,6 +15,8 @@ import javafx.stage.Stage;
 public class HighScores {
 
     // Hardcoded placeholder scores until real scores are saved
+
+//    change it to record type
     private static final String[][] DUMMY_SCORES = {
             {"Alex",    "12000"},
             {"Sam",     "9800"},

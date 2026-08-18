@@ -2,6 +2,8 @@ package au.edu.Griffith;
 
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.VBox;
@@ -92,7 +94,7 @@ public class Tetris {
 
         //Sidebar buttons
         //back button
-        Button backButton = new Button("Main Menu");
+        Button backButton = new Button("Back");
         backButton.setPrefWidth(150);
         backButton.setStyle(
                 "-fx-background-color: #555; -fx-text-fill: white; -fx-font-size: 14px;"
@@ -107,14 +109,43 @@ public class Tetris {
         );
         replayButton.setFocusTraversable(false);
         backButton.setOnAction(e -> {
-            isGameOver = false;
-            fallAccumulator = 0;
-            if (timer != null) timer.stop();
-            gameRoot.getChildren().clear();
 
-            Main main = new Main();
-            main.showMainMenu(stage);
+            //Pause if game while the dialog is open
+            boolean oldPauseState = isPaused;
+            isPaused = true;
+            pauseLabel.setVisible(true);
+
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Confirm");
+            alert.setHeaderText("Return to Main Menu?");
+            alert.setContentText("Cancel to resume game");
+
+            ButtonType yes = new ButtonType("Yes");
+            ButtonType cancel = ButtonType.CANCEL;
+
+            alert.getButtonTypes().setAll(yes, cancel);
+
+            alert.showAndWait().ifPresent(response -> {
+
+                if (response == yes) {
+                    //back to main menu
+                    isGameOver = false;
+                    fallAccumulator = 0;
+
+                    if (timer != null) timer.stop();
+                    gameRoot.getChildren().clear();
+
+                    Main main = new Main();
+                    main.showMainMenu(stage);
+
+                } else {
+                    //resume game
+                    isPaused = oldPauseState;
+                    pauseLabel.setVisible(isPaused);
+                }
+            });
         });
+
 
         // Button container
         VBox buttonBox = new VBox(10, backButton);
@@ -198,6 +229,7 @@ public class Tetris {
     }
 
     // spawn piece
+    //needs to be abstract piece
     private void spawnPiece() {
         currentType = nextType;
         nextType = getRandomType();
@@ -530,6 +562,7 @@ public class Tetris {
                 }
             }
         }
+
 
         if (cleared > 0) {
             score += cleared * 100;
