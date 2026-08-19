@@ -6,6 +6,8 @@ import javafx.animation.SequentialTransition;
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -182,8 +184,23 @@ public class Main extends Application {
             stage.setScene(configurationScene);
         });
 
-        //needs a confirmation pop up
-        exitButton.setOnAction(event -> javafx.application.Platform.exit());
+        //Confirmation before Application Exit
+        exitButton.setOnAction(event -> {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Confirm");
+            alert.setHeaderText("Exit the game?");
+
+            ButtonType yes = new ButtonType("Yes");
+            ButtonType cancel = ButtonType.CANCEL;
+
+            alert.getButtonTypes().setAll(yes, cancel);
+            alert.showAndWait().ifPresent(response -> {
+                if (response == yes) {
+                    //exit application
+                    javafx.application.Platform.exit();
+                }
+            });
+        });
 
         menuLayout.getChildren().addAll(
                 playButton,
