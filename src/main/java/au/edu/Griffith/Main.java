@@ -181,6 +181,8 @@ public class Main extends Application {
             Scene configurationScene = configuration.createConfigurationScene(stage);
             stage.setScene(configurationScene);
         });
+
+        //needs a confirmation pop up
         exitButton.setOnAction(event -> javafx.application.Platform.exit());
 
         menuLayout.getChildren().addAll(
