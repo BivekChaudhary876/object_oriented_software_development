@@ -1,235 +1,160 @@
-# 📌 Project Name
 
-> A short one-line description of what this project does.
-> Example: *A Java-based Library Management System demonstrating core Object-Oriented Programming principles.*
+# 🧱 Tetris — JavaFX Edition
 
+### *Stack it. Clear it. Don't top out.*
+
+[![Java](https://img.shields.io/badge/Java-25+-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)](https://openjdk.org/)
+[![JavaFX](https://img.shields.io/badge/JavaFX-UI-0abab5?style=for-the-badge&logo=java&logoColor=white)](https://openjfx.io/)
+[![Maven](https://img.shields.io/badge/Build-Maven-C71A36?style=for-the-badge&logo=apachemaven&logoColor=white)](https://maven.apache.org/)
+[![Build Status](https://img.shields.io/badge/Build-Passing-3fb950?style=for-the-badge)]()
+[![License](https://img.shields.io/badge/License-Academic-blue?style=for-the-badge)]()
+
+A JavaFX rebuild of the classic Tetris, engineered around a clean layered architecture — input → game mechanics → animation → UI — with real interfaces, abstraction, and encapsulation under the hood.
+ 
 ---
 
-## 📖 Table of Contents
+## 📚 Table of Contents
 
-- [About the Project](#about-the-project)
-- [Team Members & Roles](#team-members--roles)
-- [Project Structure](#project-structure)
-- [OOP Concepts Used](#oop-concepts-used)
-- [Tech Stack](#tech-stack)
-- [Getting Started](#getting-started)
-- [How to Run](#how-to-run)
-- [Git Workflow (Branching Strategy)](#git-workflow-branching-strategy)
-- [Contribution Guidelines](#contribution-guidelines)
-- [Features](#features)
-- [Screenshots / Demo](#screenshots--demo)
-- [Future Improvements](#future-improvements)
-- [License](#license)
-
+- [🎮 Features](#-features)
+- [🏗️ Architecture](#️-architecture)
+- [🧰 Tech Stack](#-tech-stack)
+- [🚀 Getting Started](#-getting-started)
+- [📁 Project Structure](#-project-structure)
+- [🔀 Git Workflow](#-git-workflow)
+- [👥 Team & Roles](#-team--roles)
 ---
 
-## 📝 About the Project
+## 🎮 Features
 
-Briefly describe:
-- What problem this project solves
-- Why you built it (course/assignment context, e.g. OOP mini-project)
-- Key objectives
-
-Example:
-> This project was developed as part of our Object-Oriented Software Development coursework. It simulates a [Library / Hospital / E-commerce / Banking] system using core Java, applying OOP principles such as Encapsulation, Inheritance, Polymorphism, and Abstraction.
-
+**Application Shell**
+- 🎬 Splash screen (group + course info)
+- 🏠 Main menu — Play · Config · Scores · Exit
+- ⚙️ Live configuration screen (sliders & checkboxes)
+- 🏆 Top-10 high score board
+  **Gameplay**
+- 📐 Classic 10×20 playfield
+- 🌊 Smooth, timer-driven gravity — no instant snapping
+- ⬅️➡️⬆️⬇️ Full arrow-key move & rotate controls
+- 🧹 Multi-row line clear with color integrity
+- ⏸️ Pause / resume with `P`
+- 🚪 Exit confirmation dialog
 ---
 
-## 👥 Team Members & Roles
+## 🏗️ Architecture
 
-| Name                  | Role                        | GitHub Username     | Module/Class Owned             |
-|-----------------------|-----------------------------|----------------------|---------------------------------|
-| Bivek CHaudhary       | Team Lead / Backend Logic   | @bivekchaudhary876          | `Main.java`, `Controller.java` |
-| Aries Dave Bantigue   | Data Model / Entities       | @ariesdavebantigue2024           | `Model/` package               |
-| Dean Busooa           | UI / Console Interface      | @dean         | `View/` package                |
-| Anshumaan Saraf       | Database / File Handling    | @ansh0928             | `Repository/` package          |
-| Liz Mary Tharian      | Testing / Documentation     | @liz             | `Test/` package, README        |
-
-
----
-
-## 🗂 Project Structure
+The game runs on a five-layer pipeline, so input, logic, animation, and rendering never tangle:
 
 ```
-project-name/
-│
-├── src/
-│   ├── main/
-│   │   ├── Main.java
-│   │   ├── model/
-│   │   │   ├── User.java
-│   │   │   ├── Product.java
-│   │   │   └── ...
-│   │   ├── controller/
-│   │   │   └── AppController.java
-│   │   ├── view/
-│   │   │   └── ConsoleUI.java
-│   │   └── repository/
-│   │       └── DataStore.java
-│   └── test/
-│       └── AppTest.java
-│
-├── docs/
-│   └── UML_diagrams/
-│
-├── .gitignore
-├── README.md
-└── pom.xml (if using Maven)
+⌨️  Input Handler  →  🔁  Game Loop  →  🧠  Game Mechanics  →  🎞️  Animation Layer  →  🖼️  UI Layer
+                              ↕
+                       📦  Data Model (Board, Active Piece, Score)
 ```
 
-> Adjust structure based on whether you're using plain Java, Maven, or Gradle.
-
+> Keyboard input drives a fixed-timestep game loop, which mutates a shared data model; the animation layer interpolates position changes before the UI layer renders the frame.
+ 
 ---
 
-## 🧩 OOP Concepts Used
+## 🧰 Tech Stack
 
-| Concept          | Where It's Used                                  |
-|------------------|---------------------------------------------------|
-| Encapsulation    | Private fields with getters/setters in `model/`   |
-| Inheritance      | `Employee` extends `Person`                        |
-| Polymorphism     | Method overriding in `calculateSalary()`           |
-| Abstraction      | Abstract class `Shape` / interface `Payable`       |
-| Interfaces       | `Comparable`, custom interfaces like `Discountable`|
-
-> Update with the actual classes and design patterns your team implemented.
-
----
-
-## 🛠 Tech Stack
-
-- **Language:** Java (JDK 17 or specify version)
-- **Build Tool:** Maven / Gradle / None (plain javac)
-- **IDE Used:** IntelliJ IDEA / Eclipse / VS Code
-- **Version Control:** Git & GitHub
-
+| Layer | Technology                                   |
+|---|----------------------------------------------|
+| Language | ☕ Java 25+                                  |
+| UI Framework | 🎨 JavaFX                                    |
+| Build Tool | 📦 Maven (`org.openjfx:javafx-maven-plugin`) |
+| Version Control | 🐙 Git + GitHub (PRs, reviews, tags)         |
+ 
 ---
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Java JDK 17+ installed ([Download here](https://www.oracle.com/java/technologies/downloads/))
-- Git installed
-- (Optional) Maven or Gradle installed
-- An IDE like IntelliJ IDEA, Eclipse, or VS Code
-
-### Clone the Repository
+- ✅ JDK 25+
+- ✅ Maven 3.8+
+### Run it
 
 ```bash
-git clone https://github.com/your-org/project-name.git
-cd project-name
+git clone https://github.com/BivekChaudhary876/object_oriented_software_development.git
+cd object_oriented_software_development
+mvn clean javafx:run
 ```
+
+That's it — the splash screen should appear within a few seconds, followed by the main menu. 🎉
+ 
+---
+## 📁 Project Structure
+
+<details>
+<summary><strong>Click to expand full file tree</strong></summary>
+
+```
+object_oriented_software_development/
+├── src/
+│   └── main/
+│       ├── java/
+│       │   └── au/edu/Griffith/
+│       │       ├── AbstractTetromino.java   🧩 abstract base class for every piece
+│       │       ├── Movable.java             🔌 interface defining movement behaviour
+│       │       ├── Configuration.java       ⚙️ settings screen
+│       │       ├── HighScores.java          🏆 high score screen
+│       │       ├── Main.java                🚪 entry point + splash screen
+│       │       ├── Tetris.java              🧠 core game loop & logic
+│       │       ├── TetrominoI.java          🟦 I-piece
+│       │       ├── TetrominoJ.java          🟧 J-piece
+│       │       ├── TetrominoL.java          🟪 L-piece
+│       │       ├── TetrominoO.java          🟨 O-piece
+│       │       ├── TetrominoS.java          🟩 S-piece
+│       │       ├── TetrominoT.java          🟥 T-piece
+│       │       └── TetrominoZ.java          🟫 Z-piece
+│       └── resources/                       🖼️ splash image & static assets
+├── target/                                  📦 build output
+├── .gitignore
+├── pom.xml                                  🏷️ artifact: TetrisApp
+└── README.md
+```
+
+</details>
 
 ---
 
-## ▶️ How to Run
+## 🔀 Git Workflow
 
-### Without Build Tool
-```bash
-javac -d bin src/main/*.java src/main/**/*.java
-java -cp bin Main
+```
+feature branch → Pull Request → Code Review → Merge into main → Milestone tag
 ```
 
-### With Maven
-```bash
-mvn clean compile
-mvn exec:java -Dexec.mainClass="Main"
-```
+1. 🌱 Branch off `main` for each feature (e.g. `feature/high-score-back-button`)
+2. 💬 Commit with clear, descriptive messages
+3. 🔍 Open a PR — every PR gets reviewed by a teammate before merging
+4. ✅ Merge once approved
+5. 🏷️ Milestones are marked with annotated tags (e.g. `milestone-1-submission`) on the finalized `main`
+---
 
-### With Gradle
-```bash
-./gradlew run
-```
+## 👥 Team & Roles
+
+<div align="center">
+
+| Member | Role |
+|---|---|
+| 🧑‍💻 **Aries Dave Bantigue** | Programmer |
+| ✍️ **Anshumaan Saraf** | Documentation Lead |
+| 🗂️ **Bivek Chaudhary** | Project Manager |
+| 🏛️ **Dean Busooa** | Architect |
+| 🧪 **Liz Mary Tharian** | Tester & Programmer |
+
+</div>
 
 ---
 
-## 🌿 Git Workflow (Branching Strategy)
 
-Since 5 people are contributing, please follow this workflow to avoid conflicts:
 
-1. **Never push directly to `main`.**
-2. Each member works on their own feature branch:
-   ```bash
-   git checkout -b feature/<your-name>-<feature>
-   # example: feature/john-user-model
-   ```
-3. Commit changes with clear messages:
-   ```bash
-   git add .
-   git commit -m "Add User class with encapsulation"
-   ```
-4. Push your branch:
-   ```bash
-   git push origin feature/<your-name>-<feature>
-   ```
-5. Open a **Pull Request (PR)** into `main`.
-6. At least **one other teammate must review and approve** before merging.
-7. Resolve merge conflicts locally before merging:
-   ```bash
-   git checkout main
-   git pull origin main
-   git checkout feature/<your-name>-<feature>
-   git merge main
-   # resolve conflicts, then push again
-   ```
-8. Delete the branch after it's merged to keep things clean.
+## Contributing / Git Workflow
 
-**Branch naming convention:**
-```
-feature/<name>-<short-description>
-bugfix/<name>-<short-description>
-docs/<name>-<short-description>
-```
+This project follows a feature-branch workflow:
 
----
+1. Create a feature branch off `main` (e.g. `feature/high-score-back-button`)
+2. Commit changes with clear, descriptive messages
+3. Open a Pull Request against `main`
+4. At least one team member reviews and approves the PR
+5. Merge into `main` once approved
 
-## 🤝 Contribution Guidelines
-
-- Write clean, readable, and well-commented code.
-- Follow Java naming conventions (PascalCase for classes, camelCase for methods/variables).
-- Each class should follow the **Single Responsibility Principle**.
-- Test your code before pushing.
-- Update this README if you add a new module or major feature.
-- Communicate with the team before making major structural changes.
-
----
-
-## ✨ Features
-
-- [ ] Feature 1 — e.g. User Registration & Login
-- [ ] Feature 2 — e.g. Add/Update/Delete records
-- [ ] Feature 3 — e.g. Search & Filter functionality
-- [ ] Feature 4 — e.g. File-based or DB-based data persistence
-- [ ] Feature 5 — e.g. Reports/Summary generation
-
-> Check these off as they're completed.
-
----
-
-## 📷 Screenshots / Demo
-
-_Add screenshots of your console output or UI here once available._
-
-```
-[Insert image or terminal output screenshot]
-```
-
----
-
-## 🔮 Future Improvements
-
-- Add a GUI using JavaFX or Swing
-- Connect to a real database (MySQL/PostgreSQL) instead of file storage
-- Add unit tests with JUnit
-- Add exception handling and input validation improvements
-
----
-
-## 📄 License
-
-This project is created for academic purposes as part of an Object-Oriented Software Development course.
-
----
-
-### 🙌 Acknowledgements
-
-Thanks to all 5 team members for their contributions and collaboration on this project!
+Milestone submissions are marked with annotated Git tags (e.g. `milestone-1-submission`) pointing at the finalized `main` branch for that milestone.
