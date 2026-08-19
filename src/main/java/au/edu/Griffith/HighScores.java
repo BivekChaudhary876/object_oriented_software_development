@@ -81,7 +81,7 @@ public class HighScores {
         }
 
         //back button
-        Button backButton = new Button("Main Menu");
+        Button backButton = new Button("Back");
         backButton.setPrefWidth(150);
         backButton.setStyle(
                 "-fx-background-color: #555; -fx-text-fill: white; -fx-font-size: 14px;"
