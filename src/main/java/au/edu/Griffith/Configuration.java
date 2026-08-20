@@ -97,7 +97,7 @@ public class Configuration {
         });
 
         //footer
-        Label author = new Label("Author: Group 12");
+        Label author = new Label("Author: Group 5");
         author.setTextFill(Color.WHITE);
         author.setStyle("-fx-font-size: 12px;");
 
