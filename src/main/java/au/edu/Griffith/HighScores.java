@@ -16,14 +16,14 @@ public class HighScores {
 
     // Hardcoded placeholder scores until real scores are saved
 
-//    change it to record type
-    private static final String[][] DUMMY_SCORES = {
-            {"Alex",    "12000"},
-            {"Sam",     "9800"},
-            {"Jordan",  "7600"},
-            {"Riley",   "5400"},
-            {"Casey",   "3200"},
-            {"Morgan",  "1500"}
+    // Using java record type for score entry
+    private static final ScoreEntry[] DUMMY_SCORES = {
+            new ScoreEntry("Alex", 12000),
+            new ScoreEntry("Sam",9800),
+            new ScoreEntry("Jordan",7600),
+            new ScoreEntry("Riley",5400),
+            new ScoreEntry("Casey",3200),
+            new ScoreEntry("Morgan",1500),
     };
 
     public Scene createHighScoresScene(Stage stage) {
@@ -67,11 +67,11 @@ public class HighScores {
         //rows
         for (int i = 0; i < DUMMY_SCORES.length; i++) {
 
-            Label name = new Label(DUMMY_SCORES[i][0]);
+            Label name = new Label(DUMMY_SCORES[i].name());
             name.setTextFill(Color.WHITE);
             name.setStyle("-fx-font-size: 18px;");
 
-            Label score = new Label(DUMMY_SCORES[i][1]);
+            Label score = new Label(String.valueOf(DUMMY_SCORES[i].score()));
             score.setTextFill(Color.WHITE);
             score.setStyle("-fx-font-size: 18px;");
 
