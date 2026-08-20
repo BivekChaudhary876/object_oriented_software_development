@@ -9,6 +9,7 @@ au\edu\Griffith\Movable.class
 au\edu\Griffith\Tetris$TetrominoType.class
 au\edu\Griffith\Tetris$1.class
 au\edu\Griffith\TetrominoT.class
+au\edu\Griffith\ScoreEntry.class
 au\edu\Griffith\TetrominoZ.class
 au\edu\Griffith\TetrominoS.class
 au\edu\Griffith\Tetris$2.class
