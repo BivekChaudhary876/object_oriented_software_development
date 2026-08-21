@@ -87,17 +87,17 @@ That's it — the splash screen should appear within a few seconds, followed by 
 <summary><strong>Click to expand full file tree</strong></summary>
 
 ```
-object_oriented_software_development/
+tetris_game/
 ├── src/
 │   └── main/
 │       ├── java/
 │       │   └── au/edu/Griffith/
-│       │       ├── AbstractTetromino.java   🧩 abstract base class for every piece
-│       │       ├── Movable.java             🔌 interface defining movement behaviour
-│       │       ├── Configuration.java       ⚙️ settings screen
-│       │       ├── HighScores.java          🏆 high score screen
-│       │       ├── Main.java                🚪 entry point + splash screen
-│       │       ├── Tetris.java              🧠 core game loop & logic
+│       │       ├── AbstractTetromino.java   🧩 Abstract base class for every piece
+│       │       ├── Movable.java             🔌 Interface defining movement behaviour
+│       │       ├── Configuration.java       ⚙️ Settings screen
+│       │       ├── HighScores.java          🏆 High score screen
+│       │       ├── Main.java                🚪 Entry point + splash screen
+│       │       ├── Tetris.java              🧠 Core game loop & logic
 │       │       ├── TetrominoI.java          🟦 I-piece
 │       │       ├── TetrominoJ.java          🟧 J-piece
 │       │       ├── TetrominoL.java          🟪 L-piece
@@ -105,11 +105,10 @@ object_oriented_software_development/
 │       │       ├── TetrominoS.java          🟩 S-piece
 │       │       ├── TetrominoT.java          🟥 T-piece
 │       │       └── TetrominoZ.java          🟫 Z-piece
-│       └── resources/                       🖼️ splash image & static assets
-├── target/                                  📦 build output
-├── .gitignore
-├── pom.xml                                  🏷️ artifact: TetrisApp
-└── README.md
+│       └── resources/                       🖼️ Splash image & static assets
+├── .gitignore                               🚫 Ignored IDE & build files
+├── pom.xml                                  🏷️ Maven project configuration
+└── README.md                                📖 Project documentation
 ```
 
 </details>
